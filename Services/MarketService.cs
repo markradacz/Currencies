@@ -26,19 +26,26 @@ namespace Currencies.Services
         public decimal GetMarketValue(string name, dynamic json)
         {
             decimal value = 0;
-            switch(name.ToLower())
+            try
             {
-                case "bittrex":
-                    value = (decimal)json.result[0].High;
-                    break;
-                case "bitbay":
-                    value = (decimal)json.average;
-                    break;
-                case "cryptocompare":
-                    value = (decimal)json.Data.AggregatedData.PRICE;
-                    break;
-                default:
-                    break;
+                switch (name.ToLower())
+                {
+                    case "bittrex":
+                        value = (decimal)json.result[0].High;
+                        break;
+                    case "bitbay":
+                        value = (decimal)json.average;
+                        break;
+                    case "cryptocompare":
+                        value = (decimal)json.Data.AggregatedData.PRICE;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch
+            {
+                return -1;
             }
             return value;
         }

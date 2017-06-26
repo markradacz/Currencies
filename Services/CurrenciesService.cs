@@ -1,9 +1,7 @@
 ﻿using Currencies.Domain;
 using Currencies.Interfaces;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -17,7 +15,7 @@ namespace Currencies.Services
 
         public CurrenciesService()
         {
-            _currencies = JsonConvert.DeserializeObject<HashSet<Currency>>(File.ReadAllText("settings.json"));
+            _currencies = Json.Deserialize<HashSet<Currency>>("settings.json");
             _marketService = new MarketService();
         }
 
@@ -36,8 +34,7 @@ namespace Currencies.Services
 
         public async Task<CurrencyExchange[]> Update(CurrencyExchange[] data)
         {
-            var result = await GetCurrencyData();
-            for (int i = 0; i< result.Length; i++)
+            for (int i = 0; i< data.Length; i++)
             {
                 data[i].Update(
                     await GetCurrencyExchangeValue(data[i].MarketName, data[i].MarketUrl)
@@ -55,6 +52,12 @@ namespace Currencies.Services
                 Market market = _marketService.GetMarketByName(currency.MarketName);
                 string url = String.Format(market.Url, currency.Name, exchangeCurrency);
                 decimal value = await GetCurrencyExchangeValue(market.Name, url);
+                if (value == -1)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("\tError: Invalid address: {0}", url);
+                    continue;
+                }
                 CurrencyExchange currencyExchange = CurrencyExchange.Instance(currency.Name, exchangeCurrency, value, url, market.Name);
                 currencyExchange.Update(value);
                 data.Add(currencyExchange);
@@ -66,8 +69,8 @@ namespace Currencies.Services
         {
             WebClient webClient = new WebClient();
             string source = await Task.Run(() =>
-                    webClient.DownloadString(url));
-            dynamic json = JsonConvert.DeserializeObject(source);
+                webClient.DownloadString(url));
+            dynamic json = Json.Deserialize(source);
             return _marketService.GetMarketValue(marketName, json);
         }
 

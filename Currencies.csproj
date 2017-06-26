@@ -50,6 +50,7 @@
     <Compile Include="Domain\Market.cs" />
     <Compile Include="Interfaces\ICurrencies.cs" />
     <Compile Include="Interfaces\IMarkets.cs" />
+    <Compile Include="Json.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CurrenciesService.cs" />

@@ -9,6 +9,7 @@ namespace Currencies
     {
         static void Main(string[] args)
         {
+            Console.Title = "Currencies";
             CurrenciesService currenciesService = new CurrenciesService();
             Console.WriteLine("Downloading data...");
             Task.Run(async () =>
